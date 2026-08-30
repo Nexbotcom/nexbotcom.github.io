@@ -21,12 +21,20 @@
 </style>
 </head>
 <body>
-<nav style="position:sticky; top:0; background:#0d0d12; padding:14px 20px; display:flex; justify-content:center; gap:24px; z-index:998; border-bottom:1px solid #222;">
+
+ <nav style="position:sticky; top:0; background:#0d0d12; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; z-index:998; border-bottom:1px solid #222;">
+  <span style="color:#6ee7ff; font-weight:bold;">Nexbot</span>
+  <button id="menu-toggle" style="background:none; border:none; color:#f0f0f0; font-size:1.6rem; cursor:pointer;">☰</button>
+</nav>
+
+<div id="menu-panel" style="display:none; position:fixed; top:0; right:0; height:100%; width:220px; background:#1a1a2e; z-index:999; padding:60px 20px; flex-direction:column; gap:20px;">
+  <span id="menu-close" style="position:absolute; top:16px; right:20px; font-size:1.5rem; cursor:pointer;">✕</span>
   <a href="#" style="color:#6ee7ff; text-decoration:none; font-weight:bold;">Home</a>
   <a href="#pricing" style="color:#f0f0f0; text-decoration:none;">Pricing</a>
   <a href="#demo-section" style="color:#f0f0f0; text-decoration:none;">Demo</a>
   <a href="#contact" style="color:#f0f0f0; text-decoration:none;">Contact</a>
-</nav>
+</div>
+
 <div class="hero">
   <h1>Nexbot</h1>
   <p>We build automation bots that save your business time — so you never miss a customer again.</p>
@@ -228,8 +236,17 @@ document.getElementById('support-send').onclick = sendSupportMessage;
 document.getElementById('support-input').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') sendSupportMessage();
 });
+
+ document.getElementById('menu-toggle').onclick = () => {
+  document.getElementById('menu-panel').style.display = 'flex';
+};
+document.getElementById('menu-close').onclick = () => {
+  document.getElementById('menu-panel').style.display = 'none';
+};
+ 
  
      </script>
+ 
  <footer>&copy; 2026 Nexbot. Built to save you time.</footer>
 </body>
 </html>
