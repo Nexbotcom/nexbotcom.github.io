@@ -141,7 +141,7 @@ document.getElementById('chat-input').addEventListener('keypress', function(e) {
 </div>
 
 <script>
-
+const GEMINI_API_KEY = "AQ.Ab8RN6JqQX8iRnwgSuudaG27YIUhPSxHfGP5H6cSnN0dpdVCXw";
 const SITE_CONTEXT = `You are the support assistant for Nexbot, a Nigerian business that builds automation bots for small businesses.
 Services: Auto-Reply Bots (WhatsApp/Telegram instant replies), Booking & Order Bots, Custom Automation.
 Pricing: ₦15,000 one-time setup + ₦5,000/month hosting & support, for the Auto-Reply Bot.
@@ -184,13 +184,13 @@ async function sendSupportMessage() {
   addSupportMessage('Typing...', 'bot');
 
   try {
-    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: SITE_CONTEXT + "\n\nVisitor question: " + text }] }]
-        })
-      });
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: SITE_CONTEXT + "\n\nVisitor question: " + text }] }]
+      })
+    });
     const data = await res.json();
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't process that. Try our WhatsApp contact instead!";
     document.getElementById('support-chat').lastChild.remove();
