@@ -184,7 +184,7 @@ async function sendSupportMessage() {
   addSupportMessage('Typing...', 'bot');
 
   try {
-    const res = await fetch("nexbot-proxy.chigerenzubechukwu.workers.dev", {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
