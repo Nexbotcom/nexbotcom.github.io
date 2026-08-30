@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Nexbot</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d0d12; color: #f0f0f0; padding: 30px 20px; }
+  h2 { color: #6ee7ff; margin-bottom: 20px; text-align: center; }
+  form { display: flex; flex-direction: column; gap: 12px; max-width: 400px; margin: 0 auto; }
+  input, textarea { padding: 12px; border-radius: 8px; border: none; background: #1a1a2e; color: #fff; font-size: 1rem; }
+  textarea { resize: vertical; }
+  button { background: #6ee7ff; color: #0d0d12; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+  #status { text-align: center; margin-top: 15px; }
+</style>
+</head>
+<body>
+
+<h2>Post a New Update</h2>
+<form id="post-form">
+  <input type="password" id="password" placeholder="Admin password" required>
+  <input type="text" id="title" placeholder="Post title" required>
+  <textarea id="content" placeholder="Post content" rows="5" required></textarea>
+  <button type="submit">Publish</button>
+</form>
+<p id="status"></p>
+
+<script>
+document.getElementById('post-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const status = document.getElementById('status');
+  status.textContent = 'Publishing...';
+
+  try {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/posts", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        password: document.getElementById('password').value,
+        title: document.getElementById('title').value,
+        content: document.getElementById('content').value
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      status.textContent = '✅ Published!';
+      document.getElementById('post-form').reset();
+    } else {
+      status.textContent = '❌ ' + (data.error || 'Something went wrong');
+    }
+  } catch (err) {
+    status.textContent = '❌ Error publishing';
+  }
+});
+</script>
+
+</body>
+</html>
