@@ -196,12 +196,14 @@ async function sendSupportMessage() {
       })
     });
     const data = await res.json();
-    const reply = data.output_text || "Sorry, I couldn't process that. Try our WhatsApp contact instead!";
+    console.log("STATUS:", res.status);
+    console.log("RESPONSE:", JSON.stringify(data));
+    const reply = data.output_text || ("DEBUG: " + JSON.stringify(data));
     document.getElementById('support-chat').lastChild.remove();
     addSupportMessage(reply, 'bot');
   } catch (err) {
     document.getElementById('support-chat').lastChild.remove();
-    addSupportMessage("Something went wrong — please reach out via WhatsApp instead.", 'bot');
+    addSupportMessage("DEBUG ERROR: " + err.message, 'bot');
   }
 }
 
