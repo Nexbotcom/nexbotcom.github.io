@@ -142,7 +142,8 @@ document.getElementById('chat-input').addEventListener('keypress', function(e) {
 
 <script>
 const OPENROUTER_API_KEY = "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";
-const SITE_CONTEXT = `You are the support assistant for Nexbot, a Nigerian business that builds automation bots for small businesses.
+const SITE_CONTEXT = `You are the support assistant for Nexbot, a Nigerian business that builds automation bots for small businesses, and all kind of bot.
+let chatHistory = [{ role: "system", content: SITE_CONTEXT }];
 Services: Auto-Reply Bots (WhatsApp/Telegram instant replies), Booking & Order Bots, Custom Automation.
 Pricing: ₦15,000 one-time setup + ₦5,000/month hosting & support, for the Auto-Reply Bot.
 Contact: via the WhatsApp link on the site.
@@ -174,7 +175,6 @@ function addSupportMessage(text, sender) {
   chat.appendChild(bubble);
   chat.scrollTop = chat.scrollHeight;
 }
-
 async function sendSupportMessage() {
   const input = document.getElementById('support-input');
   const text = input.value.trim();
@@ -182,6 +182,8 @@ async function sendSupportMessage() {
   addSupportMessage(text, 'user');
   input.value = '';
   addSupportMessage('Typing...', 'bot');
+
+  chatHistory.push({ role: "user", content: text });
 
   try {
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -192,28 +194,22 @@ async function sendSupportMessage() {
       },
       body: JSON.stringify({
         model: "openrouter/free",
-        messages: [
-          { role: "system", content: SITE_CONTEXT },
-          { role: "user", content: text }
-        ]
+        messages: chatHistory
       })
     });
     const data = await res.json();
-    console.log("STATUS:", res.status);
-    console.log("RESPONSE:", JSON.stringify(data));
-    const reply = data.choices?.[0]?.message?.content || ("DEBUG: " + JSON.stringify(data));
+    const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn't process that. Try our WhatsApp contact instead!";
+
+    chatHistory.push({ role: "assistant", content: reply });
+
     document.getElementById('support-chat').lastChild.remove();
     addSupportMessage(reply, 'bot');
   } catch (err) {
     document.getElementById('support-chat').lastChild.remove();
-    addSupportMessage("DEBUG ERROR: " + err.message, 'bot');
+    addSupportMessage("Something went wrong — please reach out via WhatsApp instead.", 'bot');
   }
 }
 
-document.getElementById('support-send').onclick = sendSupportMessage;
-document.getElementById('support-input').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') sendSupportMessage();
-});
      </script>
  <footer>&copy; 2026 Nexbot. Built to save you time.</footer>
 </body>
