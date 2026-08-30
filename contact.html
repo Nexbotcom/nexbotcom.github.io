@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Nexbot</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d0d12; color: #f0f0f0; line-height: 1.6; }
+  .btn { display: inline-block; background: #6ee7ff; color: #0d0d12; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+  section { padding: 50px 20px; max-width: 800px; margin: 0 auto; }
+  h2 { font-size: 1.6rem; margin-bottom: 20px; color: #6ee7ff; text-align: center; }
+  footer { text-align: center; padding: 30px; color: #777; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<nav style="position:sticky; top:0; background:#0d0d12; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; z-index:998; border-bottom:1px solid #222;">
+  <a href="index.html" style="color:#6ee7ff; font-weight:bold; text-decoration:none;">Nexbot</a>
+  <button id="menu-toggle" style="background:none; border:none; color:#f0f0f0; font-size:1.6rem; cursor:pointer;">☰</button>
+</nav>
+
+<div id="menu-panel" style="display:none; position:fixed; top:0; right:0; height:100%; width:220px; background:#1a1a2e; z-index:999; padding:60px 20px; flex-direction:column; gap:20px;">
+  <span id="menu-close" style="position:absolute; top:16px; right:20px; font-size:1.5rem; cursor:pointer;">✕</span>
+  <a href="index.html" style="color:#f0f0f0; text-decoration:none;">Home</a>
+  <a href="pricing.html" style="color:#f0f0f0; text-decoration:none;">Pricing</a>
+  <a href="demo.html" style="color:#f0f0f0; text-decoration:none;">Demo</a>
+  <a href="contact.html" style="color:#6ee7ff; text-decoration:none; font-weight:bold;">Contact</a>
+</div>
+
+<section id="contact">
+  <h2>Get In Touch</h2>
+  <p style="text-align:center; color:#bbb;">Message us directly — we'll get back to you fast.</p>
+  <p style="text-align:center; margin-top:15px;">
+    <a href="https://wa.me/+2349157677407" class="btn">Chat on WhatsApp</a>
+  </p>
+</section>
+
+<footer>&copy; 2026 Nexbot. Built to save you time.</footer>
+
+<script>
+document.getElementById('menu-toggle').onclick = () => {
+  document.getElementById('menu-panel').style.display = 'flex';
+};
+document.getElementById('menu-close').onclick = () => {
+  document.getElementById('menu-panel').style.display = 'none';
+};
+</script>
+
+</body>
+</html>
