@@ -141,14 +141,13 @@ document.getElementById('chat-input').addEventListener('keypress', function(e) {
 </div>
 
 <script>
-const OPENROUTER_API_KEY = "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";
-const SITE_CONTEXT = `You are the support assistant for Nexbot, a Nigerian business that builds automation bots for small businesses, and all kind of bot.
-let chatHistory = [{ role: "system", content: SITE_CONTEXT }];
+const OPENROUTER_API_KEY = "sk-or-v1-YOUR-KEY-HERE";
+const SITE_CONTEXT = `You are the support assistant for Nexbot, a Nigerian business that builds automation bots for small businesses, and all kinds of bots.
 Services: Auto-Reply Bots (WhatsApp/Telegram instant replies), Booking & Order Bots, Custom Automation.
 Pricing: ₦15,000 one-time setup + ₦5,000/month hosting & support, for the Auto-Reply Bot.
 Contact: via the WhatsApp link on the site.
 Answer visitor questions about Nexbot's services, pricing, and how it works. Keep answers short, friendly, and helpful. If asked something unrelated to Nexbot, politely redirect to how you can help with their business automation needs.`;
-
+let chatHistory = [{ role: "system", content: SITE_CONTEXT }];
 document.getElementById('support-toggle').onclick = () => {
   document.getElementById('support-panel').style.display = 'block';
 };
@@ -209,7 +208,11 @@ async function sendSupportMessage() {
     addSupportMessage("Something went wrong — please reach out via WhatsApp instead.", 'bot');
   }
 }
-
+document.getElementById('support-send').onclick = sendSupportMessage;
+document.getElementById('support-input').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') sendSupportMessage();
+});
+ 
      </script>
  <footer>&copy; 2026 Nexbot. Built to save you time.</footer>
 </body>
