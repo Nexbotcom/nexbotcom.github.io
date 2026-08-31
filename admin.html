@@ -24,7 +24,13 @@
   <textarea id="content" placeholder="Post content" rows="5" required></textarea>
   <button type="submit">Publish</button>
 </form>
+
+ <div id="posts-list" style="max-width:400px; margin:30px auto 0;">
+  <h3 style="color:#f0f0f0; margin-bottom:10px;">Existing Posts</h3>
+ </div>
+ 
 <p id="status"></p>
+ 
 
 <script>
 document.getElementById('post-form').addEventListener('submit', async (e) => {
@@ -53,6 +59,47 @@ document.getElementById('post-form').addEventListener('submit', async (e) => {
     status.textContent = '❌ Error publishing';
   }
 });
+
+
+ 
+async function loadAdminPosts() {
+  const container = document.getElementById('posts-list');
+  container.innerHTML = '<h3 style="color:#f0f0f0; margin-bottom:10px;">Existing Posts</h3><p style="color:#888;">Loading...</p>';
+  try {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/posts");
+    const posts = await res.json();
+    let html = '<h3 style="color:#f0f0f0; margin-bottom:10px;">Existing Posts</h3>';
+    posts.forEach(p => {
+      html += `<div style="background:#1a1a2e; padding:12px; border-radius:8px; margin-bottom:8px;">
+        <strong style="color:#fff;">${p.title}</strong> <span style="color:#888; font-size:0.8rem;">(${p.id})</span>
+        <button onclick="deletePost('${p.id}')" style="display:block; margin-top:8px; background:#ff6b6b; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;">Delete</button>
+      </div>`;
+    });
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = '<p style="color:#888;">Couldn\'t load posts.</p>';
+  }
+}
+
+async function deletePost(id) {
+  const password = document.getElementById('password').value;
+  if (!password) { alert('Enter your password in the field above first'); return; }
+  try {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/posts", {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: password, id: id })
+    });
+    const data = await res.json();
+    if (data.success) { loadAdminPosts(); } else { alert('Failed: ' + (data.error || 'unknown error')); }
+  } catch (err) {
+    alert('Error deleting post');
+  }
+}
+
+loadAdminPosts();
+
+ 
 </script>
 
 </body>
