@@ -35,7 +35,10 @@
  <div id="subs-list" style="max-width:400px; margin:30px auto 0;">
   <h3 style="color:#f0f0f0; margin-bottom:10px;">Subscribers</h3>
  </div>
- 
+ <div id="reviews-list" style="max-width:400px; margin:30px auto 0;">
+  <h3 style="color:#f0f0f0; margin-bottom:10px;">Pending Reviews</h3>
+</div>
+<button onclick="loadReviews()" style="display:block; margin:10px auto; background:#6ee7ff; color:#0d0d12; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">Load Reviews</button>
 
 <script>
 document.getElementById('post-form').addEventListener('submit', async (e) => {
@@ -129,7 +132,42 @@ loadAdminPosts();
   }
  }
  
+async function loadReviews() {
+  const password = document.getElementById('password').value;
+  const container = document.getElementById('reviews-list');
+  if (!password) { container.innerHTML = '<h3 style="color:#f0f0f0;">Pending Reviews</h3><p style="color:#888;">Enter password above first.</p>'; return; }
+  container.innerHTML = '<h3 style="color:#f0f0f0;">Pending Reviews</h3><p style="color:#888;">Loading...</p>';
+  try {
+    const res = await fetch(`https://nexbot-proxy.chigerenzubechukwu.workers.dev/reviews?password=${encodeURIComponent(password)}`);
+    const reviews = await res.json();
+    let html = '<h3 style="color:#f0f0f0; margin-bottom:10px;">Reviews</h3>';
+    reviews.forEach(r => {
+      html += `<div style="background:#1a1a2e; padding:12px; border-radius:8px; margin-bottom:8px;">
+        <strong style="color:#fff;">${r.author}</strong> ${r.approved ? '<span style="color:#6ee7ff;">✅ Approved</span>' : '<span style="color:#ff6b6b;">⏳ Pending</span>'}
+        <p style="color:#bbb; margin:6px 0;">${r.text}</p>
+        ${!r.approved ? `<button onclick="approveReview('${r.id}')" style="background:#6ee7ff; color:#0d0d12; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;">Approve</button>` : ''}
+      </div>`;
+    });
+    container.innerHTML = html || '<h3 style="color:#f0f0f0;">Reviews</h3><p style="color:#888;">No reviews yet.</p>';
+  } catch (err) {
+    container.innerHTML = '<h3 style="color:#f0f0f0;">Reviews</h3><p style="color:#888;">Couldn\'t load.</p>';
+  }
+}
 
+async function approveReview(id) {
+  const password = document.getElementById('password').value;
+  try {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/reviews/approve", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: password, id: id })
+    });
+    const data = await res.json();
+    if (data.success) { loadReviews(); } else { alert('Failed: ' + (data.error || 'unknown')); }
+  } catch (err) {
+    alert('Error approving review');
+  }
+ }
  
 </script>
 
