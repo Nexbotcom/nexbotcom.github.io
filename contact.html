@@ -103,6 +103,32 @@ document.getElementById('menu-close').onclick = () => {
     status.textContent = '❌ Error subscribing';
   }
 });
+
+ document.getElementById('review-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const status = document.getElementById('review-status');
+  status.textContent = 'Submitting...';
+  try {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/reviews", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        author: document.getElementById('review-author').value,
+        text: document.getElementById('review-text').value
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      status.textContent = '✅ Thank you! Your review will appear after approval.';
+      document.getElementById('review-form').reset();
+    } else {
+      status.textContent = '❌ ' + (data.error || 'Something went wrong');
+    }
+  } catch (err) {
+    status.textContent = '❌ Error submitting review';
+  }
+});
+ 
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "ea0c6875f77d42648b1c0135746f9004"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
