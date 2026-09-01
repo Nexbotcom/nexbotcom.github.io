@@ -57,6 +57,20 @@
   </p>
 </section>
 
+ <section>
+  <h2>What Our Clients Say</h2>
+  <div style="max-width:500px; margin:0 auto; position:relative;">
+    <div id="testimonial-box" class="card" style="min-height:100px; display:flex; flex-direction:column; justify-content:center;">
+      <p id="testimonial-text" style="font-style:italic; color:#ddd;"></p>
+      <p id="testimonial-author" style="margin-top:10px; color:#6ee7ff; font-weight:bold;"></p>
+    </div>
+    <div style="display:flex; justify-content:center; gap:20px; margin-top:15px;">
+      <button onclick="prevTestimonial()" style="background:#1a1a2e; color:#6ee7ff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">← Prev</button>
+      <button onclick="nextTestimonial()" style="background:#1a1a2e; color:#6ee7ff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">Next →</button>
+    </div>
+  </div>
+ </section>
+
 <section>
   <h2>What We Offer</h2>
   <div class="services">
@@ -251,6 +265,25 @@ document.getElementById('support-input').addEventListener('keypress', function(e
     status.textContent = '❌ Error subscribing';
   }
 });
+
+ const testimonials = [
+  { text: "Coming soon — be one of our first clients and share your experience here!", author: "Your business could be featured here" }
+];
+let currentTestimonial = 0;
+
+function showTestimonial(i) {
+  document.getElementById('testimonial-text').textContent = testimonials[i].text;
+  document.getElementById('testimonial-author').textContent = "— " + testimonials[i].author;
+}
+function nextTestimonial() {
+  currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+  showTestimonial(currentTestimonial);
+}
+function prevTestimonial() {
+  currentTestimonial = (currentTestimonial - 1 + testimonials.length) % testimonials.length;
+  showTestimonial(currentTestimonial);
+}
+showTestimonial(0);
  
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "ea0c6875f77d42648b1c0135746f9004"}'></script><!-- End Cloudflare Web Analytics -->
