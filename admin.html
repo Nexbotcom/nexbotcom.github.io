@@ -28,8 +28,13 @@
  <div id="posts-list" style="max-width:400px; margin:30px auto 0;">
   <h3 style="color:#f0f0f0; margin-bottom:10px;">Existing Posts</h3>
  </div>
+ <button onclick="loadSubscribers()" style="display:block; margin:10px auto; background:#6ee7ff; color:#0d0d12; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">Load Subscribers</button>
  
 <p id="status"></p>
+
+ <div id="subs-list" style="max-width:400px; margin:30px auto 0;">
+  <h3 style="color:#f0f0f0; margin-bottom:10px;">Subscribers</h3>
+ </div>
  
 
 <script>
@@ -98,6 +103,32 @@ async function deletePost(id) {
 }
 
 loadAdminPosts();
+
+ async function loadSubscribers() {
+  const password = document.getElementById('password').value;
+  const container = document.getElementById('subs-list');
+  if (!password) {
+    container.innerHTML = '<h3 style="color:#f0f0f0; margin-bottom:10px;">Subscribers</h3><p style="color:#888;">Enter password above to view.</p>';
+    return;
+  }
+  container.innerHTML = '<h3 style="color:#f0f0f0; margin-bottom:10px;">Subscribers</h3><p style="color:#888;">Loading...</p>';
+  try {
+    const res = await fetch(`https://nexbot-proxy.chigerenzubechukwu.workers.dev/subscribers?password=${encodeURIComponent(password)}`);
+    const data = await res.json();
+    if (data.error) {
+      container.innerHTML = '<h3 style="color:#f0f0f0; margin-bottom:10px;">Subscribers</h3><p style="color:#888;">' + data.error + '</p>';
+      return;
+    }
+    let html = '<h3 style="color:#f0f0f0; margin-bottom:10px;">Subscribers (' + data.length + ')</h3>';
+    data.forEach(s => {
+      html += `<div style="background:#1a1a2e; padding:10px; border-radius:8px; margin-bottom:6px; color:#fff;">${s.email}</div>`;
+    });
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = '<h3 style="color:#f0f0f0; margin-bottom:10px;">Subscribers</h3><p style="color:#888;">Couldn\'t load.</p>';
+  }
+ }
+ 
 
  
 </script>
