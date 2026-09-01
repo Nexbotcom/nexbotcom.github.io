@@ -47,6 +47,16 @@
   </div>
 </section>
 
+ <section>
+  <h2>Stay Updated</h2>
+  <p style="text-align:center; color:#bbb; margin-bottom:15px;">Get notified when we launch new features and services.</p>
+  <form id="newsletter-form" style="display:flex; gap:10px; max-width:400px; margin:0 auto; flex-wrap:wrap; justify-content:center;">
+    <input id="newsletter-email" type="email" placeholder="Your email" required style="flex:1; min-width:200px; padding:12px; border-radius:8px; border:none; background:#1a1a2e; color:#fff;">
+    <button type="submit" style="background:#6ee7ff; color:#0d0d12; border:none; padding:12px 20px; border-radius:8px; font-weight:bold; cursor:pointer;">Subscribe</button>
+  </form>
+  <p id="newsletter-status" style="text-align:center; margin-top:10px; color:#6ee7ff;"></p>
+ </section>
+
 <footer>&copy; 2026 Nexbot. Built to save you time.</footer>
 
 <script>
@@ -56,6 +66,29 @@ document.getElementById('menu-toggle').onclick = () => {
 document.getElementById('menu-close').onclick = () => {
   document.getElementById('menu-panel').style.display = 'none';
 };
+
+ document.getElementById('newsletter-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('newsletter-email').value;
+  const status = document.getElementById('newsletter-status');
+  status.textContent = 'Subscribing...';
+  try {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/subscribe", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email })
+    });
+    const data = await res.json();
+    if (data.success) {
+      status.textContent = '✅ Subscribed! We\'ll keep you updated.';
+      document.getElementById('newsletter-form').reset();
+    } else {
+      status.textContent = '❌ ' + (data.error || 'Something went wrong');
+    }
+  } catch (err) {
+    status.textContent = '❌ Error subscribing';
+  }
+});
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "ea0c6875f77d42648b1c0135746f9004"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
