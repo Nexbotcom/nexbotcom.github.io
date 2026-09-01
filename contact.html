@@ -94,7 +94,7 @@ document.getElementById('menu-close').onclick = () => {
     });
     const data = await res.json();
     if (data.success) {
-      status.textContent = '✅ Subscribed! We\'ll keep you updated.';
+      status.textContent = 'Subscribed! We\'ll keep you updated.';
       document.getElementById('newsletter-form').reset();
     } else {
       status.textContent = '❌ ' + (data.error || 'Something went wrong');
@@ -119,7 +119,7 @@ document.getElementById('menu-close').onclick = () => {
     });
     const data = await res.json();
     if (data.success) {
-      status.textContent = '✅ Thank you! Your review will appear after approval.';
+      status.textContent = 'Thank you! Your review will appear after approval.';
       document.getElementById('review-form').reset();
     } else {
       status.textContent = '❌ ' + (data.error || 'Something went wrong');
