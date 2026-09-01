@@ -18,6 +18,12 @@
 <body>
 
 <h2>Post a New Update</h2>
+ <div style="max-width:400px; margin:0 auto 30px; text-align:center;">
+  <h3 style="color:#f0f0f0; margin-bottom:10px;">Availability Status</h3>
+  <button onclick="setStatus('online')" style="background:#6ee7ff; color:#0d0d12; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-right:8px;">🟢 Set Online</button>
+  <button onclick="setStatus('away')" style="background:#ff6b6b; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer;">🔴 Set Away</button>
+  <p id="status-msg" style="margin-top:10px; color:#888;"></p>
+ </div>
 <form id="post-form">
   <input type="password" id="password" placeholder="Admin password" required>
   <input type="text" id="title" placeholder="Post title" required>
@@ -168,7 +174,24 @@ async function approveReview(id) {
     alert('Error approving review');
   }
  }
- 
+
+ async function setStatus(status) {
+  const password = document.getElementById('password').value;
+  if (!password) { alert('Enter your password in the field above first'); return; }
+  const msg = document.getElementById('status-msg');
+  msg.textContent = 'Updating...';
+  try {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/status", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: password, status: status })
+    });
+    const data = await res.json();
+    msg.textContent = data.success ? '✅ Status updated to ' + status : '❌ Failed';
+  } catch (err) {
+    msg.textContent = '❌ Error updating status';
+  }
+ }
 </script>
 
 </body>
