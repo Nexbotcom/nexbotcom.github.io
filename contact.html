@@ -34,6 +34,7 @@
 
 <section id="contact">
   <h2>Get In Touch</h2>
+ <p id="availability-status" style="text-align:center; margin-bottom:15px; font-weight:bold;">Checking availability...</p>
   <p style="text-align:center; color:#bbb;">Message us directly — we'll get back to you fast.</p>
   <p style="text-align:center; margin-top:15px;">
     <a href="https://wa.me/+2349157677407" class="btn">Chat on WhatsApp</a>
@@ -130,6 +131,22 @@ document.getElementById('menu-close').onclick = () => {
     status.textContent = '❌ Error submitting review';
   }
 });
+
+ async function loadStatus() {
+  try {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/status");
+    const data = await res.json();
+    const el = document.getElementById('availability-status');
+    if (data.status === "online") {
+      el.innerHTML = '🟢 Online now — quick replies';
+      el.style.color = '#6ee7ff';
+    } else {
+      el.innerHTML = '🔴 Away — we\'ll reply soon';
+      el.style.color = '#ff6b6b';
+    }
+  } catch (err) {}
+}
+loadStatus();
  
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "ea0c6875f77d42648b1c0135746f9004"}'></script><!-- End Cloudflare Web Analytics -->
