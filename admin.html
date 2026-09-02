@@ -31,6 +31,11 @@
   <button type="submit">Publish</button>
 </form>
 
+ <div style="max-width:400px; margin:20px auto; text-align:center;">
+  <button onclick="testChannelPost()" style="background:#6ee7ff; color:#0d0d12; border:none; padding:10px 16px; border-radius:6px; cursor:pointer;">🧪 Test Channel Post</button>
+  <p id="channel-post-status" style="margin-top:10px; color:#888;"></p>
+ </div>
+
  <div id="posts-list" style="max-width:400px; margin:30px auto 0;">
   <h3 style="color:#f0f0f0; margin-bottom:10px;">Existing Posts</h3>
  </div>
@@ -192,6 +197,26 @@ async function approveReview(id) {
     msg.textContent = '❌ Error updating status';
   }
  }
+
+ async function testChannelPost() {
+  const status = document.getElementById('channel-post-status');
+  status.textContent = 'Generating and posting...';
+  try {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/channel-post", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await res.json();
+    if (data.success) {
+      status.textContent = '✅ Posted: ' + data.post;
+    } else {
+      status.textContent = '❌ ' + (data.error || 'Failed') + (data.details ? ' — ' + JSON.stringify(data.details) : '');
+    }
+  } catch (err) {
+    status.textContent = '❌ Error: ' + err.message;
+  }
+ }
+ 
 </script>
 
 </body>
