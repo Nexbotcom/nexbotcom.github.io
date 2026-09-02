@@ -165,6 +165,13 @@ Contact: via the WhatsApp link or contact form on the Contact page.
 Answer visitor questions about Nexbot's services, pricing, and how it works. Keep answers short, friendly, and helpful. If asked something unrelated to Nexbot, politely redirect to how you can help.`;
 let chatHistory = [{ role: "system", content: SITE_CONTEXT }];
 
+ document.getElementById('support-toggle').onclick = () => {
+  document.getElementById('support-panel').style.display = 'block';
+};
+document.getElementById('support-close').onclick = () => {
+  document.getElementById('support-panel').style.display = 'none';
+};
+
 function addSupportMessage(text, sender) {
   const chat = document.getElementById('support-chat');
   const bubble = document.createElement('div');
