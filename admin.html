@@ -204,7 +204,8 @@ async function approveReview(id) {
   try {
     const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/channel-post", {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: document.getElementById('password').value })
     });
     const data = await res.json();
     if (data.success) {
