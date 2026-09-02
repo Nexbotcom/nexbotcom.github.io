@@ -32,9 +32,17 @@
 </form>
 
  <div style="max-width:400px; margin:20px auto; text-align:center;">
-  <button onclick="testChannelPost()" style="background:#6ee7ff; color:#0d0d12; border:none; padding:10px 16px; border-radius:6px; cursor:pointer;">🧪 Test Channel Post</button>
+  <button onclick="generateChannelPost()" style="background:#6ee7ff; color:#0d0d12; border:none; padding:10px 16px; border-radius:6px; cursor:pointer;">📢 Generate Post</button>
+  <div id="preview-box" style="display:none; background:#1a1a2e; padding:15px; border-radius:8px; margin-top:15px; text-align:left;">
+    <p id="preview-text" style="color:#fff; margin-bottom:12px;"></p>
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <button onclick="approvePost()" style="background:#6ee7ff; color:#0d0d12; border:none; padding:8px 14px; border-radius:6px; cursor:pointer;">✅ Post </button>
+      <button onclick="generateChannelPost()" style="background:#333; color:#fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer;">🔁 Regenerate</button>
+    </div>
+  </div>
   <p id="channel-post-status" style="margin-top:10px; color:#888;"></p>
  </div>
+ 
 
  <div id="posts-list" style="max-width:400px; margin:30px auto 0;">
   <h3 style="color:#f0f0f0; margin-bottom:10px;">Existing Posts</h3>
@@ -198,25 +206,52 @@ async function approveReview(id) {
   }
  }
 
- async function testChannelPost() {
+ let pendingPostText = "";
+
+async function generateChannelPost() {
   const status = document.getElementById('channel-post-status');
-  status.textContent = 'Generating and posting...';
+  document.getElementById('preview-box').style.display = 'none';
+  status.textContent = 'Generating...';
   try {
-    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/channel-post", {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/channel-post/generate", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: document.getElementById('password').value })
     });
     const data = await res.json();
     if (data.success) {
-      status.textContent = '✅ Posted: ' + data.post;
+      pendingPostText = data.post;
+      document.getElementById('preview-text').textContent = data.post;
+      document.getElementById('preview-box').style.display = 'block';
+      status.textContent = '';
     } else {
-      status.textContent = '❌ ' + (data.error || 'Failed') + (data.details ? ' — ' + JSON.stringify(data.details) : '');
+      status.textContent = '❌ ' + (data.error || 'Failed');
     }
   } catch (err) {
     status.textContent = '❌ Error: ' + err.message;
   }
- }
+}
+
+async function approvePost() {
+  const status = document.getElementById('channel-post-status');
+  status.textContent = 'Posting...';
+  try {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/channel-post/send", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: document.getElementById('password').value, text: pendingPostText })
+    });
+    const data = await res.json();
+    if (data.success) {
+      status.textContent = '✅ Posted to channel!';
+      document.getElementById('preview-box').style.display = 'none';
+    } else {
+      status.textContent = '❌ ' + (data.error || 'Failed');
+    }
+  } catch (err) {
+    status.textContent = '❌ Error: ' + err.message;
+  }
+}
  
 </script>
 
