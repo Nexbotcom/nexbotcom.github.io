@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subscribe to Signals — Nexbot</title>
+<meta name="description" content="Can't afford a full custom bot? Subscribe to get signals and updates sent directly to your Telegram.">
+<link rel="icon" type="image/jpeg" href="grok_1788123539249.jpg">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d0d12; color: #f0f0f0; line-height: 1.6; animation: fadeIn 0.4s ease-in; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  section { padding: 50px 20px; max-width: 500px; margin: 0 auto; }
+  h2 { font-size: 1.6rem; margin-bottom: 10px; color: #6ee7ff; text-align: center; }
+  p.sub { text-align: center; color: #bbb; margin-bottom: 25px; }
+  label { display: block; color: #fff; margin: 15px 0 6px; font-size: 0.9rem; }
+  input, select, textarea { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #1a1a2e; color: #fff; font-size: 1rem; }
+  .btn { display: block; width: 100%; background: #6ee7ff; color: #0d0d12; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 25px; font-size: 1rem; }
+  .hint { color: #888; font-size: 0.8rem; margin-top: 5px; }
+  #status { text-align: center; margin-top: 15px; color: #6ee7ff; }
+  footer { text-align: center; padding: 30px; color: #777; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+<script src="nav.js"></script>
+
+<section>
+  <h2>Subscribe to Signals</h2>
+  <p class="sub">Can't afford a full custom bot yet? Subscribe to receive signals directly on Telegram.</p>
+
+  <form id="sub-form">
+    <label>Which bot?</label>
+    <select id="bot-choice" required>
+      <option value="">Select one</option>
+      <option value="Gold Signals">Gold Trading Signals</option>
+      <option value="Football Predictions">Football Predictions</option>
+    </select>
+
+    <label>Your Name</label>
+    <input type="text" id="sub-name" required>
+
+    <label>Your Telegram Chat ID</label>
+    <input type="text" id="chat-id" required>
+    <p class="hint">Don't know your Chat ID? Message @userinfobot on Telegram — it'll reply with it instantly.</p>
+
+    <label>Verify Payment</label>
+    <select id="verify-method" required>
+      <option value="">Select method</option>
+      <option value="transaction">Transaction ID + Account Name</option>
+      <option value="screenshot">Payment Screenshot</option>
+    </select>
+
+    <div id="transaction-fields" style="display:none;">
+      <label>Transaction ID</label>
+      <input type="text" id="transaction-id">
+      <label>Name on Account</label>
+      <input type="text" id="account-name">
+    </div>
+
+    <div id="screenshot-fields" style="display:none;">
+      <label>Payment Screenshot</label>
+      <input type="file" id="screenshot" accept="image/*">
+    </div>
+
+    <button type="submit" class="btn">Submit for Verification</button>
+  </form>
+  <p id="status"></p>
+</section>
+
+<footer>&copy; 2026 Nexbot. Built to save you time.</footer>
+
+<script>
+document.getElementById('verify-method').addEventListener('change', function() {
+  document.getElementById('transaction-fields').style.display = this.value === 'transaction' ? 'block' : 'none';
+  document.getElementById('screenshot-fields').style.display = this.value === 'screenshot' ? 'block' : 'none';
+});
+
+document.getElementById('sub-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const status = document.getElementById('status');
+  status.textContent = 'Submitting...';
+
+  const formData = new FormData();
+  formData.append('bot', document.getElementById('bot-choice').value);
+  formData.append('name', document.getElementById('sub-name').value);
+  formData.append('chatId', document.getElementById('chat-id').value);
+  formData.append('method', document.getElementById('verify-method').value);
+  formData.append('transactionId', document.getElementById('transaction-id').value);
+  formData.append('accountName', document.getElementById('account-name').value);
+  const fileInput = document.getElementById('screenshot');
+  if (fileInput.files[0]) formData.append('screenshot', fileInput.files[0]);
+
+  try {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/subscription-request", {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    if (data.success) {
+      status.textContent = 'Submitted! We\'ll verify and activate your subscription shortly.';
+      document.getElementById('sub-form').reset();
+    } else {
+      status.textContent = '❌ ' + (data.error || 'Something went wrong');
+    }
+  } catch (err) {
+    status.textContent = 'Error submitting';
+  }
+});
+</script>
+
+</body>
+</html>
