@@ -58,6 +58,12 @@
   <h3 style="color:#f0f0f0; margin-bottom:10px;">Pending Reviews</h3>
 </div>
 <button onclick="loadReviews()" style="display:block; margin:10px auto; background:#6ee7ff; color:#0d0d12; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">Load Reviews</button>
+ 
+<div id="subreqs-list" style="max-width:400px; margin:30px auto 0;">
+  <h3 style="color:#f0f0f0; margin-bottom:10px;">Subscription Requests</h3>
+</div>
+<button onclick="loadSubRequests()" style="display:block; margin:10px auto; background:#6ee7ff; color:#0d0d12; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">Load Subscription Requests</button>
+ 
 
 <script>
 document.getElementById('post-form').addEventListener('submit', async (e) => {
@@ -250,6 +256,44 @@ async function approvePost() {
     }
   } catch (err) {
     status.textContent = '❌ Error: ' + err.message;
+  }
+}
+
+ async function loadSubRequests() {
+  const password = document.getElementById('password').value;
+  const container = document.getElementById('subreqs-list');
+  if (!password) { container.innerHTML = '<h3 style="color:#f0f0f0;">Subscription Requests</h3><p style="color:#888;">Enter password above first.</p>'; return; }
+  container.innerHTML = '<h3 style="color:#f0f0f0;">Subscription Requests</h3><p style="color:#888;">Loading...</p>';
+  try {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/subscription-requests?password=" + encodeURIComponent(password));
+    const reqs = await res.json();
+    let html = '<h3 style="color:#f0f0f0; margin-bottom:10px;">Subscription Requests</h3>';
+    if (reqs.length === 0) html += '<p style="color:#888;">None yet.</p>';
+    reqs.forEach(r => {
+      html += `<div style="background:#1a1a2e; padding:12px; border-radius:8px; margin-bottom:8px;">
+        <strong style="color:#fff;">${r.name}</strong> — ${r.bot} (${r.duration}mo, ₦${r.price})
+        <p style="color:#bbb; font-size:0.85rem; margin:4px 0;">Chat ID: ${r.chatId} | ${r.method}${r.method === 'transaction' ? ' — TXN: ' + r.transactionId + ', Name: ' + r.accountName : ' (see Telegram for screenshot)'}</p>
+        ${r.approved ? `<span style="color:#6ee7ff;">✅ Active until ${new Date(r.expiryDate).toDateString()}</span>` : `<button onclick="approveSub('${r.id}')" style="background:#6ee7ff; color:#0d0d12; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;">Approve</button>`}
+      </div>`;
+    });
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = '<h3 style="color:#f0f0f0;">Subscription Requests</h3><p style="color:#888;">Couldn\'t load.</p>';
+  }
+}
+
+async function approveSub(id) {
+  const password = document.getElementById('password').value;
+  try {
+    const res = await fetch("https://nexbot-proxy.chigerenzubechukwu.workers.dev/subscription-approve", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: password, id: id })
+    });
+    const data = await res.json();
+    if (data.success) { loadSubRequests(); } else { alert('Failed: ' + (data.error || 'unknown')); }
+  } catch (err) {
+    alert('Error approving');
   }
 }
  
