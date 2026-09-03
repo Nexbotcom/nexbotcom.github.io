@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Subscribe to Signals — Nexbot</title>
-<meta name="description" content="Can't afford a full custom bot? Subscribe to get signals and updates sent directly to your Telegram.">
+<meta name="description" content="Can't afford a full custom bot? Subscribe to get signals sent directly to your Telegram.">
 <link rel="icon" type="image/jpeg" href="grok_1788123539249.jpg">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,11 +14,21 @@
   h2 { font-size: 1.6rem; margin-bottom: 10px; color: #6ee7ff; text-align: center; }
   p.sub { text-align: center; color: #bbb; margin-bottom: 25px; }
   label { display: block; color: #fff; margin: 15px 0 6px; font-size: 0.9rem; }
-  input, select, textarea { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #1a1a2e; color: #fff; font-size: 1rem; }
+  input, textarea { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #1a1a2e; color: #fff; font-size: 1rem; }
   .btn { display: block; width: 100%; background: #6ee7ff; color: #0d0d12; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 25px; font-size: 1rem; }
   .hint { color: #888; font-size: 0.8rem; margin-top: 5px; }
   #status { text-align: center; margin-top: 15px; color: #6ee7ff; }
   footer { text-align: center; padding: 30px; color: #777; font-size: 0.9rem; }
+
+  .dropdown { position: relative; }
+  .dropdown-selected { background: #1a1a2e; padding: 12px; border-radius: 8px; color: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .dropdown-selected .arrow { color: #6ee7ff; }
+  .dropdown-options { display: none; position: absolute; top: 105%; left: 0; right: 0; background: #1a1a2e; border: 1px solid #333; border-radius: 8px; overflow: hidden; z-index: 10; max-height: 220px; overflow-y: auto; }
+  .dropdown-options.open { display: block; }
+  .dropdown-option { padding: 12px; color: #ddd; cursor: pointer; border-bottom: 1px solid #222; }
+  .dropdown-option:last-child { border-bottom: none; }
+  .dropdown-option:hover, .dropdown-option.active { background: #2a2a3e; color: #6ee7ff; }
+  .dropdown-option .price { color: #6ee7ff; font-size: 0.85rem; }
 </style>
 </head>
 <body>
@@ -30,13 +40,34 @@
   <h2>Subscribe to Signals</h2>
   <p class="sub">Can't afford a full custom bot yet? Subscribe to receive signals directly on Telegram.</p>
 
+  <div style="background:#1a1a2e; border:1px solid #6ee7ff; border-radius:10px; padding:18px; margin-bottom:25px;">
+    <h3 style="color:#6ee7ff; margin-bottom:10px; font-size:1rem;">Payment Details</h3>
+    <p style="color:#ddd;">Bank: <strong>********</strong></p>
+    <p style="color:#ddd;">Account Number: <strong>***67*****</strong></p>
+    <p style="color:#ddd;">Account Name: <strong>Ch*******</strong></p>
+    <p style="color:#888; font-size:0.85rem; margin-top:10px;">Select your bot and plan below to see the amount, send payment, then submit proof below.</p>
+  </div>
+
   <form id="sub-form">
     <label>Which bot?</label>
-    <select id="bot-choice" required>
-      <option value="">Select one</option>
-      <option value="Gold Signals">Gold Trading Signals</option>
-      <option value="Football Predictions">Football Predictions</option>
-    </select>
+    <div class="dropdown" id="bot-dropdown">
+      <div class="dropdown-selected" data-target="bot-options">Select a bot <span class="arrow">▾</span></div>
+      <div class="dropdown-options" id="bot-options">
+        <div class="dropdown-option" data-value="Gold Signals">Gold Trading Signals</div>
+        <div class="dropdown-option" data-value="Football Predictions">Football Predictions</div>
+      </div>
+    </div>
+
+    <label>Plan</label>
+    <div class="dropdown" id="plan-dropdown">
+      <div class="dropdown-selected" data-target="plan-options">Select a bot first <span class="arrow">▾</span></div>
+      <div class="dropdown-options" id="plan-options"></div>
+    </div>
+
+    <div id="amount-box" style="display:none; margin-top:15px; background:#1a1a2e; padding:14px; border-radius:8px; text-align:center;">
+      <p style="color:#bbb;">Amount to pay</p>
+      <p style="color:#6ee7ff; font-size:1.5rem; font-weight:bold;" id="amount-text">₦0</p>
+    </div>
 
     <label>Your Name</label>
     <input type="text" id="sub-name" required>
@@ -46,11 +77,13 @@
     <p class="hint">Don't know your Chat ID? Message @userinfobot on Telegram — it'll reply with it instantly.</p>
 
     <label>Verify Payment</label>
-    <select id="verify-method" required>
-      <option value="">Select method</option>
-      <option value="transaction">Transaction ID + Account Name</option>
-      <option value="screenshot">Payment Screenshot</option>
-    </select>
+    <div class="dropdown" id="verify-dropdown">
+      <div class="dropdown-selected" data-target="verify-options">Select method <span class="arrow">▾</span></div>
+      <div class="dropdown-options" id="verify-options">
+        <div class="dropdown-option" data-value="transaction">Transaction ID + Account Name</div>
+        <div class="dropdown-option" data-value="screenshot">Payment Screenshot</div>
+      </div>
+    </div>
 
     <div id="transaction-fields" style="display:none;">
       <label>Transaction ID</label>
@@ -72,21 +105,97 @@
 <footer>&copy; 2026 Nexbot. Built to save you time.</footer>
 
 <script>
-document.getElementById('verify-method').addEventListener('change', function() {
-  document.getElementById('transaction-fields').style.display = this.value === 'transaction' ? 'block' : 'none';
-  document.getElementById('screenshot-fields').style.display = this.value === 'screenshot' ? 'block' : 'none';
+const plans = {
+  "Gold Signals": [
+    { value: "1", label: "1 Month", price: 5000 },
+    { value: "3", label: "3 Months", price: 12000 },
+    { value: "6", label: "6 Months — more signals", price: 21500 },
+    { value: "12", label: "12 Months — with market insight", price: 60000 }
+  ],
+  "Football Predictions": [
+    { value: "1", label: "1 Month", price: 2000 },
+    { value: "3", label: "3 Months", price: 5000 },
+    { value: "6", label: "6 Months — daily predictions", price: 9000 },
+    { value: "12", label: "12 Months", price: 15500 }
+  ]
+};
+
+let selectedBot = "", selectedPlan = "", selectedPrice = 0, selectedVerify = "";
+
+// Generic dropdown toggle
+document.querySelectorAll('.dropdown-selected').forEach(el => {
+  el.addEventListener('click', () => {
+    const target = document.getElementById(el.dataset.target);
+    document.querySelectorAll('.dropdown-options').forEach(o => { if (o !== target) o.classList.remove('open'); });
+    target.classList.toggle('open');
+  });
+});
+
+// Bot selection
+document.querySelectorAll('#bot-options .dropdown-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    selectedBot = opt.dataset.value;
+    document.querySelector('#bot-dropdown .dropdown-selected').innerHTML = opt.textContent + ' <span class="arrow">▾</span>';
+    document.getElementById('bot-options').classList.remove('open');
+
+    // Populate plan options
+    const planOptions = document.getElementById('plan-options');
+    planOptions.innerHTML = plans[selectedBot].map(p =>
+      `<div class="dropdown-option" data-value="${p.value}" data-price="${p.price}">${p.label} <span class="price">₦${p.price.toLocaleString()}</span></div>`
+    ).join('');
+    document.querySelector('#plan-dropdown .dropdown-selected').innerHTML = 'Select a plan <span class="arrow">▾</span>';
+    document.getElementById('amount-box').style.display = 'none';
+    attachPlanListeners();
+  });
+});
+
+function attachPlanListeners() {
+  document.querySelectorAll('#plan-options .dropdown-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      selectedPlan = opt.dataset.value;
+      selectedPrice = parseInt(opt.dataset.price);
+      document.querySelector('#plan-dropdown .dropdown-selected').innerHTML = opt.textContent.replace('₦' + selectedPrice.toLocaleString(), '').trim() + ' <span class="arrow">▾</span>';
+      document.getElementById('plan-options').classList.remove('open');
+      document.getElementById('amount-text').textContent = '₦' + selectedPrice.toLocaleString();
+      document.getElementById('amount-box').style.display = 'block';
+    });
+  });
+}
+
+// Verify method selection
+document.querySelectorAll('#verify-options .dropdown-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    selectedVerify = opt.dataset.value;
+    document.querySelector('#verify-dropdown .dropdown-selected').innerHTML = opt.textContent + ' <span class="arrow">▾</span>';
+    document.getElementById('verify-options').classList.remove('open');
+    document.getElementById('transaction-fields').style.display = selectedVerify === 'transaction' ? 'block' : 'none';
+    document.getElementById('screenshot-fields').style.display = selectedVerify === 'screenshot' ? 'block' : 'none';
+  });
+});
+
+// Close dropdowns when tapping outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.dropdown')) {
+    document.querySelectorAll('.dropdown-options').forEach(o => o.classList.remove('open'));
+  }
 });
 
 document.getElementById('sub-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const status = document.getElementById('status');
+  if (!selectedBot || !selectedPlan || !selectedVerify) {
+    status.textContent = 'Please select a bot, plan, and verification method.';
+    return;
+  }
   status.textContent = 'Submitting...';
 
   const formData = new FormData();
-  formData.append('bot', document.getElementById('bot-choice').value);
+  formData.append('bot', selectedBot);
+  formData.append('duration', selectedPlan);
+  formData.append('price', selectedPrice);
   formData.append('name', document.getElementById('sub-name').value);
   formData.append('chatId', document.getElementById('chat-id').value);
-  formData.append('method', document.getElementById('verify-method').value);
+  formData.append('method', selectedVerify);
   formData.append('transactionId', document.getElementById('transaction-id').value);
   formData.append('accountName', document.getElementById('account-name').value);
   const fileInput = document.getElementById('screenshot');
