@@ -102,7 +102,7 @@ document.getElementById('sub-form').addEventListener('submit', async (e) => {
       status.textContent = 'Submitted! We\'ll verify and activate your subscription shortly.';
       document.getElementById('sub-form').reset();
     } else {
-      status.textContent = '❌ ' + (data.error || 'Something went wrong');
+      status.textContent = '' + (data.error || 'Something went wrong');
     }
   } catch (err) {
     status.textContent = 'Error submitting';
