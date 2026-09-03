@@ -18,6 +18,12 @@
   .card h3 { color: #fff; margin-bottom: 8px; }
   .card p { color: #bbb; font-size: 0.95rem; }
   footer { text-align: center; padding: 30px; color: #777; font-size: 0.9rem; }
+   .option { background: #1a1a2e; padding: 16px; border-radius: 10px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+.option input { width: 20px; height: 20px; }
+.option label { flex: 1; color: #fff; }
+.option .price { color: #6ee7ff; font-weight: bold; }
+#total-box { background: #1a1a2e; border: 1px solid #6ee7ff; padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px; }
+#total-box .amount { font-size: 2rem; color: #6ee7ff; font-weight: bold; margin: 8px 0; }
 </style>
 </head>
 <body>
@@ -49,11 +55,55 @@
       <p style="margin-top:10px; color:#bbb;">Trading bots, sports/stats bots, and other custom tools are priced individually based on complexity.</p>
       <a href="contact.html" class="btn" style="margin-top:10px;">Get Custom Pricing</a>
    </div>
+   
   </div>
 </section>
 
-<footer>&copy; 2026 Nexbot. Built to save you time.</footer>
+ <section>
+  <h2>Get an Instant Estimate</h2>
+  <p style="text-align:center; color:#bbb; margin-bottom:20px;">Select what you need — see your estimated price instantly.</p>
 
+  <div class="option">
+    <input type="checkbox" class="quote-item" data-price="15000" id="opt1">
+    <label for="opt1">Auto-Reply Bot <span class="price">₦15,000</span></label>
+  </div>
+  <div class="option">
+    <input type="checkbox" class="quote-item" data-price="12000" id="opt2">
+    <label for="opt2">Business Website <span class="price">₦12,000</span></label>
+  </div>
+  <div class="option">
+    <input type="checkbox" class="quote-item" data-price="20000" id="opt3">
+    <label for="opt3">Booking / Order Bot <span class="price">₦20,000</span></label>
+  </div>
+  <div class="option">
+    <input type="checkbox" class="quote-item" data-price="0" id="opt4">
+    <label for="opt4">Custom Automation <span class="price">Free quote</span></label>
+  </div>
+
+  <div id="total-box">
+    <p style="color:#bbb;">Estimated Total</p>
+    <p class="amount" id="quote-total">₦0</p>
+    <a href="contact.html" class="btn">Message Us on WhatsApp</a>
+  </div>
+  <p style="text-align:center; color:#888; margin-top:20px; font-size:0.9rem;">Looking for a trading bot or custom tool? These aren't fixed-price — <a href="contact.html" style="color:#6ee7ff;">contact us</a> for custom pricing.</p>
+ </section>
+
+<footer>&copy; 2026 Nexbot. Built to save you time.</footer>
+<script>
+ 
+function updateQuote() {
+  let total = 0, hasCustom = false;
+  document.querySelectorAll('.quote-item').forEach(item => {
+    if (item.checked) {
+      const price = parseInt(item.dataset.price);
+      if (price === 0) hasCustom = true;
+      total += price;
+    }
+  });
+  document.getElementById('quote-total').textContent = '₦' + total.toLocaleString() + (hasCustom ? '+' : '');
+}
+document.querySelectorAll('.quote-item').forEach(item => item.addEventListener('change', updateQuote));
+</script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "ea0c6875f77d42648b1c0135746f9004"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
